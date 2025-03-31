@@ -15,7 +15,7 @@ INSERT INTO entries (
   amount
 ) VALUES (
   $1, $2
-) RETURNING id, account_id, amount, created_at
+) RETURNING id, account_id, amount, created_at, updated_at
 `
 
 type CreateEntryParams struct {
@@ -31,12 +31,13 @@ func (q *Queries) CreateEntry(ctx context.Context, arg CreateEntryParams) (Entry
 		&i.AccountID,
 		&i.Amount,
 		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const getEntry = `-- name: GetEntry :one
-SELECT id, account_id, amount, created_at FROM entries
+SELECT id, account_id, amount, created_at, updated_at FROM entries
 WHERE id = $1 LIMIT 1
 `
 
@@ -48,12 +49,13 @@ func (q *Queries) GetEntry(ctx context.Context, id int64) (Entry, error) {
 		&i.AccountID,
 		&i.Amount,
 		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const listEntries = `-- name: ListEntries :many
-SELECT id, account_id, amount, created_at FROM entries
+SELECT id, account_id, amount, created_at, updated_at FROM entries
 WHERE account_id = $1
 ORDER BY id
 LIMIT $2
@@ -80,6 +82,7 @@ func (q *Queries) ListEntries(ctx context.Context, arg ListEntriesParams) ([]Ent
 			&i.AccountID,
 			&i.Amount,
 			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
