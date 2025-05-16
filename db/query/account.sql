@@ -30,5 +30,12 @@ SET balance = $2,
 WHERE id = $1
 RETURNING *;
 
+-- name: AddAccountBalance :one
+UPDATE accounts
+SET balance = sqlc.arg(amount) + balance,
+    updated_at = COALESCE(sqlc.arg(UpdatedAt), now())
+WHERE id = sqlc.arg(id)
+RETURNING *;
+
 -- name: DeleteAccount :exec
 DELETE FROM accounts WHERE id = $1;
