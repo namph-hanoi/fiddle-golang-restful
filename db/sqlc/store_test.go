@@ -14,7 +14,7 @@ func TestTransferTx(t *testing.T) {
 	account1, _ := createRandomAccount(t)
 	account2, _ := createRandomAccount(t)
 
-	n := 2
+	n := 5
 	amount := int64(10)
 
 	errs := make(chan error)
