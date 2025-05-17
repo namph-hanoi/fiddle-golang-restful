@@ -12,20 +12,19 @@ import (
 
 const addAccountBalance = `-- name: AddAccountBalance :one
 UPDATE accounts
-SET balance = $1 + balance,
-    updated_at = COALESCE($2, now())
-WHERE id = $3
+SET balance = $1 + balance
+    -- updated_at = COALESCE(sqlc.arg(updatedAt), now())
+WHERE id = $2
 RETURNING id, owner, balance, currency, created_at, updated_at
 `
 
 type AddAccountBalanceParams struct {
-	Amount    int64     `json:"amount"`
-	Updatedat time.Time `json:"updatedat"`
-	ID        int64     `json:"id"`
+	Amount int64 `json:"amount"`
+	ID     int64 `json:"id"`
 }
 
 func (q *Queries) AddAccountBalance(ctx context.Context, arg AddAccountBalanceParams) (Account, error) {
-	row := q.db.QueryRowContext(ctx, addAccountBalance, arg.Amount, arg.Updatedat, arg.ID)
+	row := q.db.QueryRowContext(ctx, addAccountBalance, arg.Amount, arg.ID)
 	var i Account
 	err := row.Scan(
 		&i.ID,

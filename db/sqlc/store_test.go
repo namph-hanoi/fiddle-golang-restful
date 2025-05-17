@@ -84,7 +84,7 @@ func TestTransferTx(t *testing.T) {
 		toAccount := result.ToAccount
 		require.NotEmpty(t, toAccount)
 		require.Equal(t, account2.ID, toAccount.ID)
-		// require.Equal(t, account2.Balance+int64(i+1)*amount, toAccount.Balance)
+		require.Equal(t, account2.Balance+int64(i+1)*amount, toAccount.Balance)
 		require.NotZero(t, toAccount.UpdatedAt)
 		require.NotZero(t, toAccount.CreatedAt)
 		require.NotEqual(t, account2.Balance, toAccount.Balance)

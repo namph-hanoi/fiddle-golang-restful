@@ -32,8 +32,8 @@ RETURNING *;
 
 -- name: AddAccountBalance :one
 UPDATE accounts
-SET balance = sqlc.arg(amount) + balance,
-    updated_at = COALESCE(sqlc.arg(UpdatedAt), now())
+SET balance = sqlc.arg(amount) + balance
+    -- updated_at = COALESCE(sqlc.arg(updatedAt), now())
 WHERE id = sqlc.arg(id)
 RETURNING *;
 
