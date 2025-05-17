@@ -90,41 +90,46 @@ func (store *Store) TransferTx(ctx context.Context, args TransferTxParams) (Tran
 
 		// workaround for the locks to be consistent in ordering
 		if args.FromAccountID < args.ToAccountID {
-			result.FromAccount, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
-				Amount: -args.Amount,
-				ID:     args.FromAccountID,
-			})
-			if err != nil {
-				return err
-			}
-
-			result.ToAccount, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
-				Amount: args.Amount,
-				ID:     args.ToAccountID,
-			})
-			if err != nil {
-				return err
-			}
+			result.FromAccount, result.ToAccount, _ = addMoney(
+				ctx,
+				q,
+				args.FromAccountID,
+				args.ToAccountID,
+				args.Amount,
+			)
 		} else {
-			result.ToAccount, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
-				Amount: args.Amount,
-				ID:     args.ToAccountID,
-			})
-			if err != nil {
-				return err
-			}
-
-			result.FromAccount, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
-				Amount: -args.Amount,
-				ID:     args.FromAccountID,
-			})
-			if err != nil {
-				return err
-			}
+			result.ToAccount, result.FromAccount, _ = addMoney(
+				ctx,
+				q,
+				args.ToAccountID,
+				args.FromAccountID,
+				-args.Amount,
+			)
 		}
 
 		return nil
 
 	})
 	return result, err
+}
+
+func addMoney(
+	ctx context.Context,
+	q *Queries,
+	sourceAccount int64,
+	destAccount int64,
+	amount int64,
+) (account1 Account, account2 Account, err error) {
+	account1, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
+		Amount: -amount,
+		ID:     sourceAccount,
+	})
+	if err != nil {
+		return
+	}
+	account2, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
+		Amount: amount,
+		ID:     destAccount,
+	})
+	return
 }
