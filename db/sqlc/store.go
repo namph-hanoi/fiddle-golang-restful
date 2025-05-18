@@ -7,6 +7,7 @@ import (
 )
 
 type Store interface {
+	Querier
 	TransferTx(ctx context.Context, args TransferTxParams) (TransferTxResult, error)
 }
 
