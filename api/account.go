@@ -2,9 +2,11 @@ package api
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 	db "github.com/namph-hanoi/fiddle-golang-restful/db/sqlc"
 )
 
@@ -28,6 +30,17 @@ func (server *Server) createAccount(ctx *gin.Context) {
 
 	account, err := server.store.CreateAccount(ctx, arg)
 	if err != nil {
+		if pgError, ok := err.(*pq.Error); ok {
+			switch pgError.Code.Name() {
+			case "unique_violation":
+				ctx.JSON(http.StatusConflict, gin.H{"error": "account already exists"})
+				return
+			case "foreign_key_violation":
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": "cannot find the linked user"})
+				return
+			}
+			log.Println(pgError.Code.Name())
+		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
