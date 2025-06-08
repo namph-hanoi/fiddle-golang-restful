@@ -58,6 +58,11 @@ func (server *Server) Start(address string) error {
 	return server.router.Run(address)
 }
 
+// Router returns the gin engine for testing purposes
+func (server *Server) Router() *gin.Engine {
+	return server.router
+}
+
 func errorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}
 }
