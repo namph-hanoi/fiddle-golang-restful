@@ -15,6 +15,11 @@ var (
 	ErrExpiredToken = errors.New("token has expired")
 )
 
+const (
+	TokenTypeAccessToken  = 1
+	TokenTypeRefreshToken = 2
+)
+
 type Payload struct {
 	ID        uuid.UUID `json:"id"`
 	Type      TokenType `json:"token_type"`
@@ -24,19 +29,20 @@ type Payload struct {
 	ExpiredAt time.Time `json:"expired_at"`
 }
 
-func NewPayload(username string, duration time.Duration) (*Payload, error) {
-	id, err := uuid.NewRandom()
+func NewPayload(username string, role string, duration time.Duration, tokenType TokenType) (*Payload, error) {
+	tokenID, err := uuid.NewRandom()
 	if err != nil {
 		return nil, err
 	}
 
 	payload := &Payload{
-		ID:        id,
+		ID:        tokenID,
+		Type:      tokenType,
 		Username:  username,
+		Role:      role,
 		IssuedAt:  time.Now(),
 		ExpiredAt: time.Now().Add(duration),
 	}
-
 	return payload, nil
 }
 
