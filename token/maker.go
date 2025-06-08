@@ -3,6 +3,6 @@ package token
 import "time"
 
 type Maker interface {
-	CreateToken(username string, duration time.Duration) (string, error)
-	VerifyToken(token string) (string, error)
+	CreateToken(username string, role string, duration time.Duration, tokenType TokenType) (string, *Payload, error)
+	VerifyToken(token string, tokenType TokenType) (*Payload, error)
 }
