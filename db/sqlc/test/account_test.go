@@ -1,17 +1,18 @@
-package db
+package db_test
 
 import (
 	"context"
 	"testing"
 	"time"
 
+	db "github.com/namph-hanoi/fiddle-golang-restful/db/sqlc" // Import the actual db package
 	"github.com/namph-hanoi/fiddle-golang-restful/util"
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomAccount(t *testing.T) (Account, CreateAccountParams) {
+func createRandomAccount(t *testing.T) (db.Account, db.CreateAccountParams) {
 	user, _ := createRandomUser(t)
-	arg := CreateAccountParams{
+	arg := db.CreateAccountParams{
 		Owner:    user.Username,
 		Balance:  util.RandomMoney(),
 		Currency: util.RandomCurrency(),
@@ -46,7 +47,7 @@ func TestGetAccount(t *testing.T) {
 
 func TestUpdateAccount(t *testing.T) {
 	accountBefore, arg := createRandomAccount(t)
-	updateParams := UpdateAccountParams{
+	updateParams := db.UpdateAccountParams{
 		ID:      accountBefore.ID,
 		Balance: arg.Balance + 1,
 	}
@@ -73,7 +74,7 @@ func TestListAccount(t *testing.T) {
 		createRandomAccount(t)
 	}
 
-	arg := ListAccountParams{
+	arg := db.ListAccountParams{
 		Offset: 5,
 		Limit:  5,
 	}
@@ -89,7 +90,7 @@ func TestCreatingTransfer(t *testing.T) {
 	account1, _ := createRandomAccount(t)
 	account2, _ := createRandomAccount(t)
 	amount := int64(10)
-	transfer, err := testQueries.CreateTransfer(context.Background(), CreateTransferParams{
+	transfer, err := testQueries.CreateTransfer(context.Background(), db.CreateTransferParams{
 		FromAccountID: account1.ID,
 		ToAccountID:   account2.ID,
 		Amount:        amount,

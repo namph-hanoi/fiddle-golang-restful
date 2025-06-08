@@ -1,18 +1,19 @@
-package db
+package db_test
 
 import (
 	"context"
 	"testing"
 	"time"
 
+	db "github.com/namph-hanoi/fiddle-golang-restful/db/sqlc"
 	"github.com/namph-hanoi/fiddle-golang-restful/util"
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomUser(t *testing.T) (User, CreateUserParams) {
+func createRandomUser(t *testing.T) (db.User, db.CreateUserParams) {
 	hashedPassword, err := util.HashPassword(util.RandomString(6))
 	require.NoError(t, err)
-	arg := CreateUserParams{
+	arg := db.CreateUserParams{
 		Username:       util.RandomOwner(),
 		HashedPassword: hashedPassword,
 		FullName:       util.RandomOwner(),
